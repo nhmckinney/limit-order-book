@@ -91,6 +91,7 @@ gtkwave lob_sim.vcd
 
 ## Future Work
 
+- Price-time priority (currently just price-priority)
 - Cancel/modify order support (currently add-only)
 - Configurable tick size / price-to-index mapping
 - Order quantity depletion on match (currently match detection only, no quantity decrement)
