@@ -1,0 +1,6 @@
+# Icarus Verilog
+*.vvp
+*.vcd
+
+# Compiled simulation scripts (no extension)
+hello
