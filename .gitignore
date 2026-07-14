@@ -2,5 +2,4 @@
 *.vvp
 *.vcd
 
-# Compiled simulation scripts (no extension)
-hello
+plan.md

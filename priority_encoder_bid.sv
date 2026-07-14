@@ -8,6 +8,14 @@ module priority_encoder_bid #(
     output logic                              best_bid_valid
 );
 
-    // YOUR CODE HERE
-
+    always_comb begin
+        best_bid_valid = 1'b0;
+        best_bid_idx = 0;
+        for (int i = 0; i < NUM_LEVELS; i++) begin
+            if (qty_levels[i] != '0) begin
+                best_bid_valid = 1'b1;
+                best_bid_idx = i;
+            end
+        end
+    end
 endmodule

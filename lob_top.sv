@@ -16,7 +16,8 @@ module lob_top #(
 
     output logic                              match_valid,
     output logic [$clog2(NUM_LEVELS)-1:0]     match_bid_idx,
-    output logic [$clog2(NUM_LEVELS)-1:0]     match_ask_idx
+    output logic [$clog2(NUM_LEVELS)-1:0]     match_ask_idx,
+    output logic [QTY_WIDTH-1:0]       match_qty
 );
     
     logic [QTY_WIDTH-1:0]  bid_qty_levels [NUM_LEVELS];
@@ -31,16 +32,24 @@ module lob_top #(
     price_level_array bidPLA(.add_valid(bid_add_valid), 
                              .add_price_idx(bid_add_price_idx),
                              .add_qty(bid_add_qty),
+                             .sub_valid(match_valid),
+                             .sub_price_idx(match_bid_idx),
+                             .sub_qty(match_qty),
                              .qty_levels(bid_qty_levels),.*);
 
     price_level_array askPLA(.add_valid(ask_add_valid), 
                              .add_price_idx(ask_add_price_idx),
                              .add_qty(ask_add_qty),
+                             .sub_valid(match_valid),
+                             .sub_price_idx(match_ask_idx),
+                             .sub_qty(match_qty),
                              .qty_levels(ask_qty_levels),.*);
 
 
    
     priority_encoder_bid peb(.qty_levels(bid_qty_levels),.*);
     priority_encoder_ask pea(.qty_levels(ask_qty_levels),.*);
+
+
     
 endmodule

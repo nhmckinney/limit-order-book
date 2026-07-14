@@ -16,9 +16,10 @@ module tb();
     logic [IDX_W-1:0]    ask_add_price_idx;
     logic [QTY_WIDTH-1:0] ask_add_qty;
 
-    logic                match_valid;
-    logic [IDX_W-1:0]    match_bid_idx;
-    logic [IDX_W-1:0]    match_ask_idx;
+    logic                  match_valid;
+    logic [IDX_W-1:0]      match_bid_idx;
+    logic [IDX_W-1:0]      match_ask_idx;
+    logic [QTY_WIDTH-1:0]  match_qty;
 
     int errors = 0;
     int checks = 0;
@@ -40,7 +41,8 @@ module tb();
         .ask_add_qty(ask_add_qty),
         .match_valid(match_valid),
         .match_bid_idx(match_bid_idx),
-        .match_ask_idx(match_ask_idx)
+        .match_ask_idx(match_ask_idx),
+        .match_qty(match_qty)
     );
 
  
