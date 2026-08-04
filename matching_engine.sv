@@ -20,6 +20,7 @@ module matching_engine #(
         match_valid = '0;
         match_bid_idx = '0;
         match_ask_idx = '0;
+        match_qty = '0;
         if (best_ask_valid && best_bid_valid && best_bid_idx >= best_ask_idx) begin
             match_valid = 1'b1;
             match_bid_idx = best_bid_idx;
