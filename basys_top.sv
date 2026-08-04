@@ -1,8 +1,10 @@
 /// Basys3 top-level for the limit order book.
 ///
-/// LEDs remain a pure switch passthrough (led = sw), unchanged from the
-/// original test module. The LOB is instantiated alongside it, driven by
-/// switches/button for a simple manual "add order" demo:
+/// LEDs surface live LOB status instead of a switch passthrough, so that
+/// synthesis can observe (and therefore keep) the internal match/reject
+/// logic instead of optimizing it all away as unreachable dead code.
+/// The LOB is instantiated alongside it, driven by switches/button for a
+/// simple manual "add order" demo:
 ///
 ///   sw[15]  = side select (0 = bid, 1 = ask)
 ///   sw[3:0] = add_price_idx (NUM_LEVELS = 16, so 4 bits is exact)
@@ -11,6 +13,14 @@
 /// add_qty is fixed at 1 and add_order_id free-runs from an internal
 /// counter, incremented once per accepted add, so each press adds a
 /// distinct single-share order at the selected price level/side.
+///
+/// led[15]    = match_valid
+/// led[14]    = bid_add_reject
+/// led[13]    = ask_add_reject
+/// led[12]    = add_pulse
+/// led[11]    = btn_stable
+/// led[10:8]  = match_qty[2:0]
+/// led[7:0]   = match_qty[QTY_WIDTH-1:QTY_WIDTH-8] (top byte of match_qty)
 module basys_top (
     input  logic        clk,
     input  logic         rst_n,
@@ -24,9 +34,6 @@ module basys_top (
     localparam ORDER_ID_WIDTH       = 16;
     localparam MAX_ORDERS_PER_LEVEL = 8;
     localparam IDX_W                = $clog2(NUM_LEVELS);
-
-    // LEDs stay a pure switch passthrough.
-    assign led = sw;
 
     // ---------------------------------------------------------------
     // Debounce + rising-edge one-shot on btnC -> single add_valid pulse
@@ -134,5 +141,15 @@ module basys_top (
         .match_ask_idx(match_ask_idx),
         .match_qty(match_qty)
     );
+
+    // LEDs surface live LOB status so the internal logic is observable
+    // (and therefore not optimized away as unreachable during synthesis).
+    assign led = {match_valid,
+                  bid_add_reject,
+                  ask_add_reject,
+                  add_pulse,
+                  btn_stable,
+                  match_qty[2:0],
+                  match_qty[QTY_WIDTH-1 -: 8]};
 
 endmodule
