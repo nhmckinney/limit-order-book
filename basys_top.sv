@@ -36,8 +36,28 @@ module basys_top (
     localparam IDX_W                = $clog2(NUM_LEVELS);
 
     // ---------------------------------------------------------------
+    // Clock divider: board oscillator (W5) is a fixed 100 MHz. The LOB
+    // datapath's worst-case combinational path doesn't meet timing at
+    // 100 MHz (WNS was -4.7 ns), so the LOB is run from a divided-by-2
+    // 50 MHz clock instead. This is a real toggle flip-flop, not just a
+    // relaxed constraint -- the LOB logic actually runs at half rate on
+    // hardware.
+    // ---------------------------------------------------------------
+    logic clk_div2;
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) clk_div2 <= 1'b0;
+        else        clk_div2 <= ~clk_div2;
+    end
+
+    // ---------------------------------------------------------------
     // Debounce + rising-edge one-shot on btnC -> single add_valid pulse
     // per physical button press.
+    //
+    // This stays on the full-rate 100 MHz clk: it's a slow human-speed
+    // input path (debounce counter maxes out well under 1 ms) with no
+    // timing pressure, and keeping it on clk avoids needing a second
+    // synchronizer to cross btnC into the clk_div2 domain.
     // ---------------------------------------------------------------
     logic btn_sync0, btn_sync1;
     logic btn_stable, btn_prev;
@@ -124,7 +144,7 @@ module basys_top (
         .ORDER_ID_WIDTH(ORDER_ID_WIDTH),
         .MAX_ORDERS_PER_LEVEL(MAX_ORDERS_PER_LEVEL)
     ) lob (
-        .clk(clk),
+        .clk(clk_div2),
         .rst_n(rst_n),
         .bid_add_valid(bid_add_valid),
         .bid_add_price_idx(bid_add_price_idx),
